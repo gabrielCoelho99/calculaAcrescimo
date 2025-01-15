@@ -1,68 +1,58 @@
-const itemList = document.getElementById("itemList");
-const addItemBtn = document.getElementById("addItemBtn");
-const calculateBtn = document.getElementById("calculateBtn");
-const output = document.getElementById("output");
+const tableBody = document.querySelector("#priceTable tbody");
+const addRowBtn = document.getElementById("addRowBtn");
+const clearBtn = document.getElementById("clearBtn");
+const increaseInput = document.getElementById("increase");
+const totalOriginalSpan = document.getElementById("totalOriginal");
+const totalWithIncreaseSpan = document.getElementById("totalWithIncrease");
 
-// Adiciona uma nova linha para inserir itens
-addItemBtn.addEventListener("click", () => {
-  const newItemRow = document.createElement("div");
-  newItemRow.classList.add("item-row");
-  newItemRow.innerHTML = `
-    <input type="text" class="item-name" placeholder="Nome da peça" />
-    <input type="number" class="item-price" placeholder="Preço (R$)" />
-    <input type="number" class="item-quantity" placeholder="Quantidade" />
-    <button type="button" class="remove-item-btn">Remover</button>
+// Adiciona uma nova linha à tabela
+addRowBtn.addEventListener("click", () => {
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td><input type="text" class="item-name" placeholder="Nome da peça" /></td>
+    <td><input type="number" class="item-price" placeholder="Preço (R$)" /></td>
+    <td><input type="number" class="item-quantity" placeholder="Quantidade" /></td>
+    <td class="item-total">0.00</td>
+    <td class="item-unit-increase">0.00</td>
+    <td><button class="remove-btn">Remover</button></td>
   `;
-  newItemRow.querySelector(".remove-item-btn").addEventListener("click", () => {
-    newItemRow.remove();
-  });
-  itemList.appendChild(newItemRow);
+  row.querySelector(".remove-btn").addEventListener("click", () => row.remove());
+  row.querySelectorAll("input").forEach(input => input.addEventListener("input", calculateTotals));
+  tableBody.appendChild(row);
 });
 
-// Calcula os resultados
-calculateBtn.addEventListener("click", () => {
-  const rows = document.querySelectorAll(".item-row");
-  const increasePercent = parseFloat(document.getElementById("increase").value) || 0;
+// Limpa todas as linhas da tabela
+clearBtn.addEventListener("click", () => {
+  tableBody.innerHTML = "";
+  updateSummary(0, 0);
+});
 
-  if (rows.length === 0) {
-    alert("Adicione pelo menos uma peça para calcular.");
-    return;
-  }
-
+// Calcula os totais para cada linha e os valores gerais
+function calculateTotals() {
+  const rows = tableBody.querySelectorAll("tr");
   let totalOriginal = 0;
-  const results = [];
 
-  rows.forEach((row) => {
-    const name = row.querySelector(".item-name").value.trim();
+  rows.forEach(row => {
     const price = parseFloat(row.querySelector(".item-price").value) || 0;
     const quantity = parseInt(row.querySelector(".item-quantity").value, 10) || 0;
-
-    if (!name || price <= 0 || quantity <= 0) {
-      alert("Preencha corretamente todos os campos.");
-      return;
-    }
-
     const totalItem = price * quantity;
+
+    const increasePercent = parseFloat(increaseInput.value) || 0;
     const totalWithIncrease = totalItem * (1 + increasePercent / 100);
-    const unitPriceWithIncrease = totalWithIncrease / quantity;
+    const unitPriceWithIncrease = totalWithIncrease / (quantity || 1);
+
+    row.querySelector(".item-total").textContent = totalItem.toFixed(2);
+    row.querySelector(".item-unit-increase").textContent = unitPriceWithIncrease.toFixed(2);
 
     totalOriginal += totalItem;
-
-    results.push(`
-      <p>
-        <strong>${name}:</strong> 
-        Original: R$ ${price.toFixed(2)}, 
-        Quantidade: ${quantity}, 
-        Total: R$ ${totalItem.toFixed(2)}, 
-        Preço Unitário com Acréscimo: R$ ${unitPriceWithIncrease.toFixed(2)}
-      </p>
-    `);
   });
 
-  const totalWithIncrease = totalOriginal * (1 + increasePercent / 100);
-  output.innerHTML = `
-    <p><strong>Valor Total Original:</strong> R$ ${totalOriginal.toFixed(2)}</p>
-    <p><strong>Valor Total com Acréscimo:</strong> R$ ${totalWithIncrease.toFixed(2)}</p>
-    ${results.join("")}
-  `;
-});
+  const totalWithIncrease = totalOriginal * (1 + (parseFloat(increaseInput.value) || 0) / 100);
+  updateSummary(totalOriginal, totalWithIncrease);
+}
+
+// Atualiza o resumo geral
+function updateSummary(totalOriginal, totalWithIncrease) {
+  totalOriginalSpan.textContent = totalOriginal.toFixed(2);
+  totalWithIncreaseSpan.textContent = totalWithIncrease.toFixed(2);
+}

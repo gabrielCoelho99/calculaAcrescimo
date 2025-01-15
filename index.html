@@ -3,31 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora de Preços</title>
+  <title>Calculadora Simplificada</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="container">
-    <h1>Calculadora de Preços com Acréscimo</h1>
-    <form id="priceForm">
-      <div id="itemList">
-        <div class="item-row">
-          <input type="text" class="item-name" placeholder="Nome da peça" />
-          <input type="number" class="item-price" placeholder="Preço (R$)" />
-          <input type="number" class="item-quantity" placeholder="Quantidade" />
-          <button type="button" class="remove-item-btn">Remover</button>
-        </div>
-      </div>
-      <button type="button" id="addItemBtn">Adicionar Peça</button>
-      <div class="item">
-        <label for="increase">Acréscimo (%) no parcelamento:</label>
-        <input type="number" id="increase" placeholder="5" />
-      </div>
-      <button type="button" id="calculateBtn">Calcular</button>
-    </form>
-    <div id="results">
-      <h2>Resultados</h2>
-      <div id="output"></div>
+    <h1>Calculadora de Preços</h1>
+    <table id="priceTable">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Preço (R$)</th>
+          <th>Quantidade</th>
+          <th>Total (R$)</th>
+          <th>Unitário com Acréscimo</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Linhas dinâmicas aqui -->
+      </tbody>
+    </table>
+    <div class="controls">
+      <label for="increase">Acréscimo (%):</label>
+      <input type="number" id="increase" value="5" />
+      <button id="addRowBtn">Adicionar Peça</button>
+      <button id="clearBtn">Limpar Tudo</button>
+    </div>
+    <div id="summary">
+      <p><strong>Total Original:</strong> R$ <span id="totalOriginal">0.00</span></p>
+      <p><strong>Total com Acréscimo:</strong> R$ <span id="totalWithIncrease">0.00</span></p>
     </div>
   </div>
   <script src="script.js"></script>
